@@ -43,7 +43,7 @@ The following **additional** features are implemented:
 Here's a walkthrough of implemented user stories:
 
 ![Video Walkthrough](image_search_demo.gif)
-![Sharing Walkthrough](image_search_sahre.gif)
+![Sharing Walkthrough](image_search_share.gif)
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes

@@ -28,6 +28,8 @@ public class ImageSearchActivity extends AppCompatActivity {
 
     public static final String INTENT_DATA_FILTERS = "filters";
     public static final String INTENT_DATA_IMAGE = "image";
+    public static final String DEFAULT_SEARCH_QUERY = "alligator";
+
     private GoogleImageApi googleApi;
     private static final int IMAGES_PER_PAGE = 8;
     private static final int SCROLL_MAX_PAGES = 7;
@@ -97,7 +99,6 @@ public class ImageSearchActivity extends AppCompatActivity {
             }
         });
 
-        //TODO: limit infinite scroll to 8 pages
         gvImages.setOnScrollListener(new EndlessScrollListener(IMAGES_PER_PAGE) {
             @Override
             public boolean onLoadMore(int page) {
@@ -112,12 +113,14 @@ public class ImageSearchActivity extends AppCompatActivity {
             }
         });
 
+        onSearch(DEFAULT_SEARCH_QUERY);
 
     }
 
     public void onSearch(String query) {
         scrollEnabled = false;
         nextPage = 0;
+        ImageSearchActivity.this.query = query;
         igAdapter.clear();
         googleApi.searchImages(query, 0, filters.getMap(), googleApiCallback);
     }
@@ -132,23 +135,21 @@ public class ImageSearchActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String newQuery) {
-                if(newQuery == null || newQuery.equals(query)) {
+                if (newQuery == null || newQuery.equals(query)) {
                     return false;
                 }
 
-                query = newQuery;
-                onSearch(query);
+                onSearch(newQuery);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newQuery) {
-                if(newQuery == null || newQuery.length() < 2 || newQuery.equals(query)) {
+                if (newQuery == null || newQuery.length() < 2 || newQuery.equals(query)) {
                     return false;
                 }
 
-                query = newQuery;
-                onSearch(query);
+                onSearch(newQuery);
                 return true;
             }
         });
@@ -184,7 +185,9 @@ public class ImageSearchActivity extends AppCompatActivity {
             }
 
             this.filters = filters;
-
+            String newQuery = this.query;
+            this.query = "";
+            onSearch(newQuery);
         }
     }
 

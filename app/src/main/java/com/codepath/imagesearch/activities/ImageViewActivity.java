@@ -19,6 +19,7 @@ import static com.codepath.imagesearch.util.MediaStoreHelper.shareImage;
 
 public class ImageViewActivity extends AppCompatActivity {
 
+    public static final String MIME_TYPE = "image/*";
     private MenuItem miImageLoader;
     private ShareActionProvider miShareAction;
 
@@ -56,7 +57,7 @@ public class ImageViewActivity extends AppCompatActivity {
             public void onSuccess() {
                 Log.d(ImageViewActivity.class.getSimpleName(), "loaded image " + image.url);
                 miImageLoader.setVisible(false);
-                miShareAction.setShareIntent(shareImage(ImageViewActivity.this, ivImage, "image/*", "Share Image"));
+                miShareAction.setShareIntent(shareImage(ImageViewActivity.this, ivImage, MIME_TYPE, "Share Image"));
             }
 
             @Override

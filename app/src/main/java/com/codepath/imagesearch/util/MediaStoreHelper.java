@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.io.OutputStream;
@@ -21,6 +22,7 @@ public class MediaStoreHelper {
             ContentValues values = new ContentValues(1);
             values.put(MediaStore.Images.Media.MIME_TYPE, mimeType);
             Uri uri = ctx.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            Log.d("Sharing image ", uri.toString());
             OutputStream out = ctx.getContentResolver().openOutputStream(uri);
 
             Bitmap bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
@@ -35,5 +37,5 @@ public class MediaStoreHelper {
         }
         return sharingIntent;
     }
-    
+
 }

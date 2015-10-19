@@ -11,14 +11,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.codepath.imagesearch.adapters.ImageGridAdapter;
 import com.codepath.imagesearch.R;
+import com.codepath.imagesearch.adapters.ImageGridAdapter;
 import com.codepath.imagesearch.models.ImageItem;
 import com.codepath.imagesearch.net.GoogleImageApi;
 import com.codepath.imagesearch.util.EndlessScrollListener;
@@ -47,8 +44,6 @@ public class ImageSearchActivity extends AppCompatActivity {
     private boolean scrollEnabled = false;
     private int nextPage = 0;
 
-//    private EditText etQuery;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +51,6 @@ public class ImageSearchActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        etQuery = (EditText) findViewById(R.id.etQuery);
         filters = new ParcelableStringMap();
         images = new ArrayList<ImageItem>();
 
@@ -64,11 +58,6 @@ public class ImageSearchActivity extends AppCompatActivity {
         GridView gvImages = (GridView) findViewById(R.id.gvImages);
         igAdapter = new ImageGridAdapter(this, images);
         gvImages.setAdapter(igAdapter);
-//        gridview.setAdapter(new ImageGridAdapter(this, Arrays.asList("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTxj0qSBKOYOuCAiTIkMQLn1qjJFs4784f538sNRZPUpqz0sYfOQ",
-//                "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTyEISW2nLoZeSyaM5AphLifdJJVLEM1cnX6qS4FYenmwxBCVWKpA",
-//                "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcS9jURAW3Ve55hs6Z00EiXgLVbD7mG6k9l9UphTeVEODdmYgA8h",
-//                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS46onp8fXpbXX2TSAp1vZZ8Qe9WVaSwB8AYvi2E-PnQO8cLp4W"
-//                )));
 
         googleApi = new GoogleImageApi(IMAGES_PER_PAGE);
         googleApiCallback = new GoogleImageApi.Callback() {
@@ -118,27 +107,13 @@ public class ImageSearchActivity extends AppCompatActivity {
                     return false;
                 }
 
-//                googleApi.searchImages(etQuery.getText().toString(), page, filters.getMap(), googleApiCallback);
                 googleApi.searchImages(ImageSearchActivity.this.query, nextPage, filters.getMap(), googleApiCallback);
                 return true;
             }
         });
 
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
     }
-
-//    public void onSearch(View button) {
-//        igAdapter.clear();
-//        googleApi.searchImages(etQuery.getText().toString(), 0, filters.getMap(), googleApiCallback);
-//    }
 
     public void onSearch(String query) {
         scrollEnabled = false;

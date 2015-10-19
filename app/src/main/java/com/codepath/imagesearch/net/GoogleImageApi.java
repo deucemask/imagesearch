@@ -30,7 +30,6 @@ public class GoogleImageApi {
 
 
     private int pageSize;
-    //    private int callTimes;
     private AsyncHttpClient api;
 
     public interface Callback {
@@ -45,26 +44,17 @@ public class GoogleImageApi {
         if (pageSize > MAX_PAGE_SIZE_ALLOWED) {
             throw new IllegalStateException("Maximum pageSize can be " + MAX_PAGE_SIZE_ALLOWED);
         }
-//        this.callTimes = Double.valueOf(Math.ceil(pageSize / MAX_PAGE_SIZE_ALLOWED)).intValue();
-//        if(this.callTimes < 1) {
-//            this.callTimes = 1;
-//        }
         api = new AsyncHttpClient();
     }
 
     /**
      * @param query
-     * @param page     - 1-based page number
+     * @param page - 1-based page number
      * @param callback
      */
     public void searchImages(final String query, int page, Map<String, String> filters, final Callback callback) {
-
-
-        //TODO: so far assuming pageSize is mod MAX_PAGE_SIZE_ALLOWED. Should handle more generic case.
-//        int cappedSize = MAX_PAGE_SIZE_ALLOWED;
         int start = page * this.pageSize;
         String urlFilters = Joiner.on('&').withKeyValueSeparator("=").join(filters);
-//        for(int i = 0; i < this.callTimes; i++) {
         String url = getApiUrl(query, this.pageSize, start, urlFilters);
 
         Log.d(this.getClass().getSimpleName(), "calling search api " + url);
@@ -86,15 +76,6 @@ public class GoogleImageApi {
                 callback.onFailure(query, statusCode, responseString, throwable);
             }
         });
-//        }
-
-
-//        Arrays.asList(new ImageItem("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTxj0qSBKOYOuCAiTIkMQLn1qjJFs4784f538sNRZPUpqz0sYfOQ", "one"),
-//                "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTyEISW2nLoZeSyaM5AphLifdJJVLEM1cnX6qS4FYenmwxBCVWKpA",
-//                "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcS9jURAW3Ve55hs6Z00EiXgLVbD7mG6k9l9UphTeVEODdmYgA8h",
-//                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS46onp8fXpbXX2TSAp1vZZ8Qe9WVaSwB8AYvi2E-PnQO8cLp4W"
-//        )
-
 
     }
 

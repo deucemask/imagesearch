@@ -6,6 +6,8 @@ package com.codepath.imagesearch.util;
 
 import android.widget.AbsListView;
 
+//TODO: FIXME: the page currentPage is not properly calculated
+
 public abstract class EndlessScrollListener implements AbsListView.OnScrollListener {
     // The minimum amount of items to have below your current scroll position
     // before loading more.

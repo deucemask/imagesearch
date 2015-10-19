@@ -43,7 +43,6 @@ public class SearchSettingsActivity extends AppCompatActivity {
         etSite = (EditText) findViewById(R.id.etSite);
 
         if(filters != null) {
-            //TODO: populate default filter values
             populateSpinner(filters, COLOR, spColor);
             populateSpinner(filters, IMAGE_SIZE, spSize);
             populateSpinner(filters, IMAGE_TYPE, spType);
@@ -63,7 +62,6 @@ public class SearchSettingsActivity extends AppCompatActivity {
     }
 
     public void onSave(View view) {
-        //TODO: change this to parcelable map
         ParcelableStringMap filters = new ParcelableStringMap();
         filters.clear();
         putIfExist(filters, COLOR.getUrlParam(), spColor.getSelectedItem().toString());

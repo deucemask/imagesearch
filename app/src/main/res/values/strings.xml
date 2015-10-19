@@ -2,23 +2,27 @@
     <string name="app_name">ImageSearch</string>
     <string name="action_settings">Search Settings</string>
     <string name="filter_image_none">none</string>
+    <string name="menu_search">Search</string>
 
     <string-array name="filter_image_size">
+        <item>none</item>
         <item>icon</item>
         <item>small</item>
         <item>medium</item>
         <item>large</item>
         <item>xlarge</item>
-        <item>xxlarge</item>
-        <item>huge</item>
+        <!--<item>xxlarge</item>-->
+        <!--<item>huge</item>-->
     </string-array>
     <string-array name="filter_image_type">
+        <item>none</item>
         <item>face</item>
         <item>photo</item>
         <item>clipart</item>
         <item>lineart</item>
     </string-array>
     <string-array name="filter_color">
+        <item>none</item>
         <item>black</item>
         <item>blue</item>
         <item>brown</item>

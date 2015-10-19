@@ -5,6 +5,7 @@ import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -22,6 +23,7 @@ import static com.codepath.imagesearch.models.GoogleSearchFilter.IMAGE_TYPE;
 import static com.codepath.imagesearch.models.GoogleSearchFilter.SITE;
 
 public class SearchSettingsActivity extends AppCompatActivity {
+    public static final String FILTER_NONE = "none";
     private Spinner spColor;
     private Spinner spSize;
     private Spinner spType;
@@ -42,21 +44,42 @@ public class SearchSettingsActivity extends AppCompatActivity {
 
         if(filters != null) {
             //TODO: populate default filter values
+            populateSpinner(filters, COLOR, spColor);
+            populateSpinner(filters, IMAGE_SIZE, spSize);
+            populateSpinner(filters, IMAGE_TYPE, spType);
+            if(filters.containsKey(SITE.getUrlParam())) {
+                etSite.setText(filters.get(SITE.getUrlParam()));
+            }
         }
 
+    }
+
+    private void populateSpinner(ParcelableStringMap filterValueMap, GoogleSearchFilter filter, Spinner spinner) {
+        String colorValue = filterValueMap.get(filter.getUrlParam());
+        if(colorValue != null) {
+            int colorPos = ((ArrayAdapter<String>)spinner.getAdapter()).getPosition(colorValue);
+            spinner.setSelection(colorPos);
+        }
     }
 
     public void onSave(View view) {
         //TODO: change this to parcelable map
         ParcelableStringMap filters = new ParcelableStringMap();
-        filters.put(COLOR.getUrlParam(), spColor.getSelectedItem().toString());
-        filters.put(IMAGE_SIZE.getUrlParam(), spSize.getSelectedItem().toString());
-        filters.put(IMAGE_TYPE.getUrlParam(), spType.getSelectedItem().toString());
-        filters.put(SITE.getUrlParam(), etSite.getText().toString());
+        filters.clear();
+        putIfExist(filters, COLOR.getUrlParam(), spColor.getSelectedItem().toString());
+        putIfExist(filters, IMAGE_SIZE.getUrlParam(), spSize.getSelectedItem().toString());
+        putIfExist(filters, IMAGE_TYPE.getUrlParam(), spType.getSelectedItem().toString());
+        putIfExist(filters, SITE.getUrlParam(), etSite.getText().toString());
 
         Intent intent = new Intent(this, ImageSearchActivity.class);
-        intent.putExtra("filters", filters);
+        intent.putExtra(INTENT_DATA_FILTERS, filters);
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    private void putIfExist(ParcelableStringMap map, String key, String value) {
+        if(value != null && value.length() > 0 && !value.equals(FILTER_NONE)) {
+            map.put(key, value);
+        }
     }
 }

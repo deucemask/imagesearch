@@ -24,6 +24,17 @@ public class ParcelableStringMap implements Parcelable {
         return map;
     }
 
+    public void clear() {
+        map.clear();
+    }
+
+    public String get(String key) {
+        return map.get(key);
+    }
+
+    public boolean containsKey(String key) {
+        return map.containsKey(key);
+    }
     @Override
     public int describeContents() {
         return 0;

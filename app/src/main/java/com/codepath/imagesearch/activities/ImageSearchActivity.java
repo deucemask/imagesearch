@@ -2,7 +2,9 @@ package com.codepath.imagesearch.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -12,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.codepath.imagesearch.adapters.ImageGridAdapter;
@@ -33,13 +36,18 @@ public class ImageSearchActivity extends AppCompatActivity {
     private static final int SCROLL_MAX_PAGES = 7;
 
     private static final int ACTIVITY_RES_CODE_SETTINGS = 999;
-    private int curPage = 1;
 //    private GridView gvImages;
     private List<ImageItem> images;
     private GoogleImageApi.Callback googleApiCallback;
     private ImageGridAdapter igAdapter;
     private ParcelableStringMap filters;
-    private EditText etQuery;
+
+    private String query;
+    //TODO: these two variables are a work-around for EndlessScroll bug
+    private boolean scrollEnabled = false;
+    private int nextPage = 0;
+
+//    private EditText etQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +56,10 @@ public class ImageSearchActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        etQuery = (EditText) findViewById(R.id.etQuery);
+//        etQuery = (EditText) findViewById(R.id.etQuery);
         filters = new ParcelableStringMap();
         images = new ArrayList<ImageItem>();
+
 
         GridView gvImages = (GridView) findViewById(R.id.gvImages);
         igAdapter = new ImageGridAdapter(this, images);
@@ -64,14 +73,28 @@ public class ImageSearchActivity extends AppCompatActivity {
         googleApi = new GoogleImageApi(IMAGES_PER_PAGE);
         googleApiCallback = new GoogleImageApi.Callback() {
             @Override
-            public void onSuccess(List<ImageItem> images) {
+            public void onSuccess(String responseQuery, List<ImageItem> images) {
+                //If actual query has changed by the time we got response
+                if(responseQuery == null || !responseQuery.equals(query)) {
+                    return;
+                }
+
                 igAdapter.addAll(images);
+                scrollEnabled = true;
+                nextPage++;
             }
 
             @Override
-            public void onFailure(int statusCode, String responseString, Throwable throwable) {
+            public void onFailure(String responseQuery, int statusCode, String responseString, Throwable throwable) {
                 Log.e(ImageSearchActivity.class.getSimpleName(), "Failed on google search api", throwable);
+
+                //If actual query has changed by the time we got response
+                if(responseQuery == null || !responseQuery.equals(query)) {
+                    return;
+                }
+
                 Toast.makeText(ImageSearchActivity.this, "Failed to load images", Toast.LENGTH_LONG).show();
+                scrollEnabled = true;
             }
         };
 
@@ -89,12 +112,14 @@ public class ImageSearchActivity extends AppCompatActivity {
         gvImages.setOnScrollListener(new EndlessScrollListener(IMAGES_PER_PAGE) {
             @Override
             public boolean onLoadMore(int page) {
-                Log.d(ImageSearchActivity.class.getSimpleName(), "scroll page " + page);
-                if(page > SCROLL_MAX_PAGES) {
+                //TODO: the page arg isn't correctly set. There's a bug in EndlessScrollListener.
+                Log.d(ImageSearchActivity.class.getSimpleName(), "scroll page " + page + ". Expected page " + nextPage);
+                if(!scrollEnabled || nextPage < 1 || nextPage > SCROLL_MAX_PAGES) {
                     return false;
                 }
 
-                googleApi.searchImages(etQuery.getText().toString(), page, filters.getMap(), googleApiCallback);
+//                googleApi.searchImages(etQuery.getText().toString(), page, filters.getMap(), googleApiCallback);
+                googleApi.searchImages(ImageSearchActivity.this.query, nextPage, filters.getMap(), googleApiCallback);
                 return true;
             }
         });
@@ -110,15 +135,49 @@ public class ImageSearchActivity extends AppCompatActivity {
 //        });
     }
 
-    public void onSearch(View button) {
+//    public void onSearch(View button) {
+//        igAdapter.clear();
+//        googleApi.searchImages(etQuery.getText().toString(), 0, filters.getMap(), googleApiCallback);
+//    }
+
+    public void onSearch(String query) {
+        scrollEnabled = false;
+        nextPage = 0;
         igAdapter.clear();
-        googleApi.searchImages(etQuery.getText().toString(), 0, filters.getMap(), googleApiCallback);
+        googleApi.searchImages(query, 0, filters.getMap(), googleApiCallback);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_image_search, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String newQuery) {
+                if(newQuery == null || newQuery.equals(query)) {
+                    return false;
+                }
+
+                query = newQuery;
+                onSearch(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newQuery) {
+                if(newQuery == null || newQuery.length() < 2 || newQuery.equals(query)) {
+                    return false;
+                }
+
+                query = newQuery;
+                onSearch(query);
+                return true;
+            }
+        });
+
         return true;
     }
 
@@ -144,7 +203,7 @@ public class ImageSearchActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode == RESULT_OK && requestCode == ACTIVITY_RES_CODE_SETTINGS) {
             ParcelableStringMap filters = (ParcelableStringMap) data.getParcelableExtra(INTENT_DATA_FILTERS);
-            if(filters == null || filters.getMap() == null || filters.getMap().size() == 0) {
+            if(filters == null || filters.getMap() == null) {
                 Log.e(this.getClass().getSimpleName(), "Filter data is missing");
                 return;
             }

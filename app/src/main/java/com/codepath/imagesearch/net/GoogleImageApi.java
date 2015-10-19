@@ -34,9 +34,9 @@ public class GoogleImageApi {
     private AsyncHttpClient api;
 
     public interface Callback {
-        void onSuccess(List<ImageItem> images);
+        void onSuccess(String query, List<ImageItem> images);
 
-        void onFailure(int statusCode, String responseString, Throwable throwable);
+        void onFailure(String query, int statusCode, String responseString, Throwable throwable);
     }
 
 
@@ -57,7 +57,7 @@ public class GoogleImageApi {
      * @param page     - 1-based page number
      * @param callback
      */
-    public void searchImages(String query, int page, Map<String, String> filters, final Callback callback) {
+    public void searchImages(final String query, int page, Map<String, String> filters, final Callback callback) {
 
 
         //TODO: so far assuming pageSize is mod MAX_PAGE_SIZE_ALLOWED. Should handle more generic case.
@@ -75,15 +75,15 @@ public class GoogleImageApi {
                 Log.d(GoogleImageApi.class.getSimpleName(), statusCode + " api response " + response);
                 if (statusCode == 200) {
                     List<ImageItem> images = GoogleJsonParser.parse(response);
-                    callback.onSuccess(images);
+                    callback.onSuccess(query, images);
                 } else {
-                    callback.onFailure(statusCode, parseResponseDetails(response), null);
+                    callback.onFailure(query, statusCode, parseResponseDetails(response), null);
                 }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                callback.onFailure(statusCode, responseString, throwable);
+                callback.onFailure(query, statusCode, responseString, throwable);
             }
         });
 //        }

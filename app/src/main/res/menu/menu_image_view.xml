@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ImageListActivity">
+
+    <item
+        android:id="@+id/miImageLoading"
+        android:orderInCategory="100"
+        android:title="Loading..."
+        android:visible="false"
+        app:actionLayout="@layout/action_view_progress_bar"
+        app:showAsAction="ifRoom" />
+
+
+</menu>
